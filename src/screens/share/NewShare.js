@@ -30,17 +30,18 @@ const ShareResource = ({}) => {
     //alert("Title: " + title + " Content: " + content);
     var n_val = validateName(title).error == "" ? true : false;
     var e_val = validateDescription(content).error == "" ? true: false;
+    
     //var ph_val = validateImage(image).error == "" ? true: false;
     //var p1_val = validateImage(video).error == "" ? true: false;
     //var p2_val = validateImage(pdf).error == "" ? true: false;
     
-    setError([...error, error.find(item => item.field == "title").msg = validateName(title).result])
-    setError([...error, error.find(item => item.field == "content").msg = validateDescription(content).result])
+    setError([...error, error.find(item => item.field == "title").msg = title.length != 0])
+    setError([...error, error.find(item => item.field == "content").msg = content.length != 0])
     //setError([...error, error.find(item => item.field == "image").msg = validateImage(image).result])
     //setError([...error, error.find(item => item.field == "video").msg = validateImage(video).result])
     //setError([...error, error.find(item => item.field == "pdf").msg = validateImage(pdf).result])
     
-    if(n_val && e_val){
+    if(title.length != 0 && content.length != 0){
         console.log("fields are okay")
         console.log("passwords are equal")
         setBtnState("Loading...")

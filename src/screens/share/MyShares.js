@@ -12,6 +12,8 @@ import FileDownloadButton from '../../components/ResourcesDownload';
 import { validateCollectionID_post, validateID_post, validateName } from '../../utils/validators';
 import { useNavigation } from '@react-navigation/native';
 import { SharesContext } from '../../context/sharesContext';
+import { Modal } from 'react-native';
+import ImageViewer from 'react-native-image-zoom-viewer';
 
 const MyShares = ({ }) => {
   const [shares, setShares] = useState([])
@@ -24,6 +26,7 @@ const MyShares = ({ }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [backgroundLoading, setBackgroundLoading] = useState('loading...')
   const [error, setError] = useState([{field: "id", msg:""}]);
+  const [selectedImage, setSelectedImage] = useState(null)
   const cancelRef = React.useRef(null);
   const navigation = useNavigation()  
   const toast = useToast()
@@ -52,8 +55,10 @@ const MyShares = ({ }) => {
       <Text fontWeight="bold" fontSize="lg">{item.title.toUpperCase()}</Text>
       <Text>{item.note}</Text>
       { item?.type == 'image' ? 
-        <Image width={'100%'} height={200} source={{ uri: `https://res.cloudinary.com/dofqmpzy8/image/upload/v1722596440/IJMB/students/share/${item?.fileLink}.png`}} alt="image"/>:
-      item?.type == 'video' ?
+        <Pressable onPress={() => setSelectedImage(item?.fileLink)}>
+          <Image width={'100%'} height={200} source={{ uri: `https://res.cloudinary.com/dofqmpzy8/image/upload/v1722596440/IJMB/students/share/${item?.fileLink}.png`}} alt="image"/>
+        </Pressable>
+        : item?.type == 'video' ?
         <Box flex='1' bg="black" alignItems='center' alignContent='center' justifyContent='center' style={ styles.containerStyle }>
             <Video source={{ uri: `https://res.cloudinary.com/dofqmpzy8/video/upload/v1722608953/IJMB/students/share/${item?.fileLink}.mp4`}} poster={`https://res.cloudinary.com/dofqmpzy8/video/upload/v1722608953/IJMB/students/share/${item?.fileLink}.png`} paused={true} repeat={ true } style={styles.videoStyle} controls={ true } />
         </Box>        
@@ -203,7 +208,19 @@ const deleteShare = async () => {
 
   return (
     <NativeBaseProvider>
-         
+          {selectedImage && <Box>
+        {/*<Pressable onPress={() => setSelectedImage(null)}>*/}
+          {/*<Image  width={'100%'} height={'100%'} source={{ uri: `https://res.cloudinary.com/dofqmpzy8/image/upload/v1722596440/IJMB/students/share/${selectedImage}.png`}} alt="image"/>*/}
+          <Modal visible={selectedImage ? true : false} transparent={true} onRequestClose={() => setSelectedImage(null)}>
+          <ImageViewer
+          imageUrls={ [{url: `https://res.cloudinary.com/dofqmpzy8/image/upload/v1722596440/IJMB/students/share/${selectedImage}.png`}]}
+          onSwipeDown={() => setSelectedImage(null)}
+          onClick={() => setSelectedImage(null)}
+          enableSwipeDown={true}
+        />
+        </Modal>
+        {/*</Pressable>*/}  
+    </Box>}
     <Box flex={1} p={4} bg="white">
     <DeleteConfirmation/>
     {/*<Box>

@@ -7,12 +7,13 @@ import { getAPIBaseURL } from '../../utils/helpers';
 import { getData } from '../../utils/request';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Video from 'react-native-video';
-import { Pressable, StyleSheet } from 'react-native';
+import { Modal, Pressable, StyleSheet } from 'react-native';
 import { getPermissionAndDownload, requestStoragePermission } from '../../services/storagePermission';
 //import FileDownloadButton from '../../components/ResourcesDownload';
 import { useNavigation } from '@react-navigation/native';
 import { SharesContext } from '../../context/sharesContext';
 import { FileDownloadScreen } from '../../components/ResourcesDownload';
+import ImageViewer from 'react-native-image-zoom-viewer';
 
 const Shares = ({}) => {
   const [shares, setShares] = useState([])
@@ -21,6 +22,7 @@ const Shares = ({}) => {
   const [skip, setSkip] = useState("0")
   const [refresh, setRefresh] = useState(0)
   const [backgroundLoading, setBackgroundLoading] = useState('Loading...')
+  const [selectedImage, setSelectedImage] = useState(null)
   const {isUpdated} = useContext(SharesContext)
   const navigation = useNavigation()    
   
@@ -42,7 +44,9 @@ const Shares = ({}) => {
       { item?.type == 'image' ? 
         <Box backgroundColor={'gray.100'} rounded={'md'}>
           <Flex flexDir={'column'}>
-          <Image width={'100%'} height={200} source={{ uri: `https://res.cloudinary.com/dofqmpzy8/image/upload/v1722596440/IJMB/students/share/${item?.fileLink}.png`}} alt="image"/>
+          <Pressable onPress={() => setSelectedImage(item?.fileLink)}>
+            <Image width={'100%'} height={200} source={{ uri: `https://res.cloudinary.com/dofqmpzy8/image/upload/v1722596440/IJMB/students/share/${item?.fileLink}.png`}} alt="image"/>
+          </Pressable>
           <FileDownloadScreen 
           url={`https://res.cloudinary.com/dofqmpzy8/image/upload/v1724852724/IJMB/students/share/${item?.fileLink}.png`}
                 fileName={`${item?.fileLink}.png`} />
@@ -129,6 +133,26 @@ const Shares = ({}) => {
 
   return (
     <NativeBaseProvider>
+      
+{/*<Modal visible={selectedPDF ? true : false} onRequestClose={() => setSelectedPDF(null)}>
+        <IconButton size={12} icon={<AntDesign name='close'/>} onPress={() => setSelectedPDF(null)} />
+        {selectedPDF && <PDFReader url={selectedPDF}/>}
+      </Modal>  */}   
+     
+     {selectedImage && <Box>
+        {/*<Pressable onPress={() => setSelectedImage(null)}>*/}
+          {/*<Image  width={'100%'} height={'100%'} source={{ uri: `https://res.cloudinary.com/dofqmpzy8/image/upload/v1722596440/IJMB/students/share/${selectedImage}.png`}} alt="image"/>*/}
+          <Modal visible={selectedImage ? true : false} transparent={true} onRequestClose={() => setSelectedImage(null)}>
+          <ImageViewer
+          imageUrls={ [{url: `https://res.cloudinary.com/dofqmpzy8/image/upload/v1722596440/IJMB/students/share/${selectedImage}.png`}]}
+          onSwipeDown={() => setSelectedImage(null)}
+          onClick={() => setSelectedImage(null)}
+          enableSwipeDown={true}
+        />
+        </Modal>
+        {/*</Pressable>*/}  
+    </Box>}
+
          
     <Box flex={1} p={4} bg="white">
     {/*<Box>
